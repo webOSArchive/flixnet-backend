@@ -1,58 +1,40 @@
-# Public Domain Movie API
+# Flixnet Service
 
-## Using a client
+This service has been superseded by a self-contained client. The app now bundles all movie and genre data locally and no longer depends on a live backend. This repository is kept running only to serve a graceful deprecation message to users who still have the old client installed.
 
-A client for this service exists as a cross-platform PWA, primarily targeting legacy webOS (mobile) devices, but available for other platforms if hosted on a web server. You can check it out here: [Flixnet Client](https://github.com/webOSArchive/enyo1-flixnet).
+The client repository is here: [Flixnet Client](https://github.com/webOSArchive/enyo1-flixnet).
 
-- you probably want security on the utils folder
-- `utils/import-movies.php` works best if it can write to a text file called resume.txt and a movie file called `../data/movies.json`
-- movie data comes from: https://github.com/casbah-ma/cinedantan/ 
-- extra metadata comes from TMDB
-- movies come from Archive.org
+## What's still running
 
-## Create the Database
+### /api/movies and /api/genres
 
-Use a mysql compatible server (I used mariadb)
+Both endpoints return a single hardcoded stub record directing old-client users to update their app. No database required.
 
-- `CREATE DATABASE flixnet;`
-- `USE flixnet;`
-- `SOURCE /path/to/flixnet.sql`
-- `CREATE USER 'dev'@'localhost' IDENTIFIED BY 'Str0ngP@ssword';`
-- `GRANT SELECT, INSERT, UPDATE, DELETE, CREATE, DROP, INDEX, ALTER ON flixnet.* TO 'dev'@'localhost' IDENTIFIED BY 'Str0ngP@ssword';`
-- `FLUSH PRIVILEGES`
+### index.php
 
-## API
+Public-facing landing page linking to the app download.
 
-### /api/movies
+## Refreshing the bundled movie data
 
-- If no query string is set, returns 10 random movies
-- If only `take` is set to a numeric value, returns that number of random movies (max 100)
-- If `skip` is set to a numeric value, returns either 10 or `take` number of movies in order, starting at the position indicated by skip
+If the movie catalog ever needs to be updated, the app's `data/movies.json` and `data/genres.json` can be regenerated from the database using the export script.
 
-### /api/movies/bygenre
+### Requirements
 
-- **Required** query string parameter is `genre` followed by *either* the name (string) or id (numeric) of the genre
-- If only `take` is set to a numeric value, returns that number of random movies (max 100) in that specified genre
-- If `skip` is set to a numeric value, returns either 10 or `take` number of movies in order, starting at the position indicated by skip
+- MySQL/MariaDB with the `flixnet` database still populated
+- A `secrets.php` file in this directory (see `secrets-example.php`)
 
-### /api/movies/bytitle
+### Steps
 
-- **Required** query string parameter is `query` followed by the string to search for in movie titles
-    - Search is performed with a wildcard following the search string
-- If only `take` is set to a numeric value, returns that number of random movies (max 100) with a matching title
-- If `skip` is set to a numeric value, returns either 10 or `take` number of movies in order, starting at the position indicated by skip
+1. Copy `secrets-example.php` to `secrets.php` and fill in your database credentials
+2. Deploy `utils/export-app-data.php` to the server (it requires `database.php` to be present alongside it)
+3. From the `enyo1-flixnet` directory, run:
 
-### /api/movies/byyear
+```
+sh fetch-fallback-data.sh
+```
 
-- **Required** query string parameter is `year` and must be numeric
-    - Search is performed with a wildcard following the search string
-- If only `take` is set to a numeric value, returns that number of random movies (max 100) in the given year
-- If `skip` is set to a numeric value, returns either 10 or `take` number of movies in order, starting at the position indicated by skip
+This will overwrite `enyo-app/data/movies.json` (full export with genre associations) and `enyo-app/data/genres.json`.
 
-### /api/genres
+## Historical note
 
-- Returns an array of the known genres in alphabetical order, including a count of movies in that genre
-
-### /api/years
-
-- Returns an array of the known years in numerical order, including a count of movies in that year
+The original service stored movie metadata imported from TMDB and [cinedantan](https://github.com/casbah-ma/cinedantan/), with movie files hosted on Archive.org. The database schema, import tooling, and filtered API endpoints have been removed. The last exported snapshot of the data is bundled with the client app.
