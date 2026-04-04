@@ -5,7 +5,7 @@ echo json_encode(array(
         "id"          => 0,
         "imdb_id"     => "",
         "tmdb_id"     => "",
-        "title"       => "Please Update Flixnet",
+        "title"       => "Update Flixnet",
         "description" => "This version of Flixnet is no longer supported and cannot connect to the movie service. Please visit webosarchive.org to download the latest version.",
         "year"        => "",
         "runtime"     => "",
