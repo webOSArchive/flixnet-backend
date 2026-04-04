@@ -13,8 +13,8 @@ echo json_encode(array(
         "language"    => "en",
         "identifier"  => "",
         "moviepath"   => "",
-        "poster"      => "",
-        "backdrop"    => ""
+        "poster"      => "http://flixnet.webosarchive.org/missing-poster.jpg",
+        "backdrop"    => "http://flixnet.webosarchive.org/missing-backdrop.jpg"
     )
 ));
 ?>
